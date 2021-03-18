@@ -85,23 +85,20 @@ def create_app(test_config=None):
    
   @app.route('/questions', methods=['GET'])
   def get_questions():
-    questions = Question.query.all()
-    paginated_questions = paginate_questions(request, questions)
+    categories = Category.query.order_by(Category.type).all()
+    selection = Question.query.order_by(Question.id).all()
+    current_questions = paginate_questions(request, selection)
     
-    if len(paginated_questions) == 0:
+    #If no category found then abort 404(Not Found)
+    if len(current_questions) == 0:
       abort(404)
-      
-    categories = Category.query.all()
-    data = {}
-    
-    for category in categories:
-      data[category.id] = category.type
-      
+
     return jsonify({
       'success': True,
-      'total_questions': len(questions),
-      'categories': data,
-      'questions': paginated_questions
+      'questions': current_questions,
+      'total_questions': len(selection),
+      'categories': {category.id: category.type for category in categories},
+      'current category': None
     })
 
 
@@ -112,7 +109,7 @@ def create_app(test_config=None):
 #
 #--------------------------------------------------------------------------------------------------------
 
-  @app.route('/questions/<int:question_id>)', methods=['DELETE'])
+  @app.route('/questions/<int:question_id>', methods=['DELETE'])
   def delete_question(question_id):
     try:
       question = Question.query.filter(Question.id == question_id).one_or_none()
@@ -128,7 +125,7 @@ def create_app(test_config=None):
          'success': True,
          'deleted': question_id,
          'questions': current_questions,
-         'total_questions': len(Question.query.all())
+         'total_questions': len(selection)
       })
 
     except:
@@ -164,7 +161,7 @@ def create_app(test_config=None):
           'total_questions': len(selection.all())
           })
       else:
-        question = question(question=question, answer=new_answer, Category=new_category, difficulty=new_difficulty)
+        question = Question(question=new_question, answer=new_answer, category=new_category, difficulty=new_difficulty)
         question.insert()
         selection = Question.query.order_by(Question.id).all()
         current_questions = paginate_questions(request, selection)
@@ -172,7 +169,7 @@ def create_app(test_config=None):
         return jsonify({
          'success': True,
          'created': question.id,
-         'questions': current_questions.id,
+         'questions': current_questions,
          'total_questions': len(Question.query.all())
         })
 
@@ -217,7 +214,7 @@ def create_app(test_config=None):
             abort(422)
     try:
       questions = Question.query.filter_by(category=category.id).all()
-      current_questions = get_paginated_questions(request, questions)
+      current_questions = paginate_questions(request, questions)
 
       return jsonify({
         'success': True,
