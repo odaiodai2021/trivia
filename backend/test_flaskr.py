@@ -56,35 +56,35 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(len(data['questions']))
 
     def test_get_questions_404(self):
-        response = self.client().get('/questions?page=1000')
-        data = json.loads(response.data)
+        res = self.client().get('/questions?page=1000')
+        data = json.loads(res.data)
 
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
 
     def test_create_question(self):
-        response = self.client().post('/questions', json=self.new_question)
-        data = json.loads(response.data)
+        res = self.client().post('/questions', json=self.new_question)
+        data = json.loads(res.data)
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
 
     
     def test_405_question_creation_not_allowed(self):
-        response = self.client().post('/questions/45', json=self.new_question)
-        data = json.loads(response.data)
+        res = self.client().post('/questions/45', json=self.new_question)
+        data = json.loads(res.data)
 
-        self.assertEqual(response.status_code, 405)
+        self.assertEqual(res.status_code, 405)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Method Not Allowed')
 
     def test_delete_question(self):
-        response = self.client().delete('/questions/5')
-        data = json.loads(response.data)
+        res = self.client().delete('/questions/9')
+        data = json.loads(res.data)
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertEqual(data['deleted'],5)
+        self.assertEqual(data['deleted'],9)
 
     def test_delete_question_422(self):
         res = self.client().delete('/questions/1000')
