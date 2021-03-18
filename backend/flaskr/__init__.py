@@ -8,13 +8,12 @@ import random
 from models import setup_db, Question, Category
 
 
-#-----------------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------
 # Set number of questions per page
 # the page numbered questions will take request and selection we can use argument to get page 
 # num or one if there isnt one listed - marked start and end of the questions 
 # defined the Creation application using the Test configuration None
-#-----------------------------------------------------------------------------------------------
-
+#--------------------------------------------------------------------------------------------------
 QUESTIONS_PER_PAGE = 10
 
 
@@ -34,17 +33,17 @@ def create_app(test_config=None):
   setup_db(app)
   
 
-#-----------------------------------------------------------------------------------------------  
+#----------------------------------------------------------------------------------------------------  
 # Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
-#-----------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
   
   CORS(app, resources={'/': {'origins': '*'}})
 
-#-----------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
 # Use the after_request decorator to set Access-Control-Allow
-#-----------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
 # the headers content type Authorization - allowed  different methods in the response headers
-#-----------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
   
   @app.after_request
   def after_request(response):
@@ -53,12 +52,13 @@ def create_app(test_config=None):
     response.headers.add('Access-Control-Allow-origins', '*')
     return response
 
-#-----------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
 # create an endpoint 
 # route that get all categories to handle get requests 
-# If for any reason the length of categories is 0, we need 404
-# Response body keys: 'success', 'categories' 
-#-----------------------------------------------------------------------------------------------
+# If no category found then abort 404(Not Found)
+# Response body keys: 'success', 'categories' 'total_categories'
+#----------------------------------------------------------------------------------------------------
+  
   @app.route('/categories', methods=["GET"])
   def retrive_all_categories():
     categories = Category.query.all()
@@ -75,13 +75,13 @@ def create_app(test_config=None):
       'total_categories': len(categories)
     })
 
-#---------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
 # create an endpoint
 # route that get questions, paginated (every 10 questions)  - A query about the questions
-#requested by the identifier and a method request and the selection 
-# If for any reason the length of current_questions is 0, we need 404
+# requested by the identifier and a method request and the selection 
+# If no questions found, abort 404
 # Response body keys: 'success', 'categories' and 'current_category' and 'total_questions'
-#---------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
    
   @app.route('/questions', methods=['GET'])
   def get_questions():
@@ -89,7 +89,6 @@ def create_app(test_config=None):
     selection = Question.query.order_by(Question.id).all()
     current_questions = paginate_questions(request, selection)
     
-    #If no category found then abort 404(Not Found)
     if len(current_questions) == 0:
       abort(404)
 
@@ -101,13 +100,9 @@ def create_app(test_config=None):
       'current category': None
     })
 
-
-#--------------------------------------------------------------------------------------------------------
-  #@TODO: 
-  #Create an endpoint to DELETE question using a question ID. 
-#--------------------------------------------------------------------------------------------------------
-#
-#--------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
+# Delete the question using a question ID
+#----------------------------------------------------------------------------------------------------
 
   @app.route('/questions/<int:question_id>', methods=['DELETE'])
   def delete_question(question_id):
@@ -132,14 +127,11 @@ def create_app(test_config=None):
       print(sys.exc_info())
       abort(422)
   
-#------------------------------------------------------------------------------------------------
-  #@TODO: 
-  #Create an endpoint to POST a new question, 
-  #which will require the question and answer text, 
-  #category, and difficulty score.
-#-----------------------------------------------------------------------------------------------
-#
-#-----------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
+# Route that create a new question 
+# Response body keys: 'success', 'created'(id of created question), 'questions' and 'total_questions'
+# Inserts a new question
+#----------------------------------------------------------------------------------------------------
 
   @app.route('/questions', methods=['POST'])
   def create_new_question():
@@ -176,15 +168,11 @@ def create_app(test_config=None):
     except:
       print(sys.exc_info())
       abort(422)
-          
 
-
-#--------------------------------------------------------------------------------------------------
-  
-  #@TODO: 
-  #Create a POST endpoint to get questions based on a search term. 
-  #It should return any questions for whom the search term 
-  #is a substring of the question. 
+#----------------------------------------------------------------------------------------------------
+# Get questions based on a search term
+# Return any questions for whom the search term 
+#---------------------------------------------------------------------------------------------------- 
 
   @app.route('/questions/search', methods=['POST'])
   def search_questions():
@@ -204,8 +192,9 @@ def create_app(test_config=None):
       print(sys.exc_info())
       abort(404)
 
-  #@TODO: 
-  #Create a GET endpoint to get questions based on category. 
+#----------------------------------------------------------------------------------------------------
+# Create a GET endpoint to get questions based on category. 
+#----------------------------------------------------------------------------------------------------
 
   @app.route('/categories/<int:id>/questions', methods=['GET'])
   def get_questions_by_category(id):
@@ -226,12 +215,12 @@ def create_app(test_config=None):
       print(sys.exc_info())
       abort(400)
 
-  
-  #@TODO: 
-  #Create a POST endpoint to get questions to play the quiz. 
-  #This endpoint should take category and previous question parameters 
-  #and return a random questions within the given category, 
-  #if provided, and that is not one of the previous questions. 
+#---------------------------------------------------------------------------------------------------- 
+# Create a POST endpoint to get questions to play the quiz. 
+# take category and previous question parameters 
+# return a random questions within the given category
+# if provided, and that is not one of the previous questions. 
+#----------------------------------------------------------------------------------------------------
 
   @app.route('/quizzes', methods=['POST'])
   def play_quiz():
@@ -262,20 +251,11 @@ def create_app(test_config=None):
       print(sys.exc_info())
       abort(422)
 
-#-------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
 # error handelrs - used HTTP status codes returns ( 404 - 400 - 422 - 500 - 405)
-# with messages ("Resource Not Found" - "bad request" - "unprocessable" - "Internal Server Error")
-# 'Method Not Allowed'
-#-------------------------------------------------------------------------------------------------
-  
-  @app.errorhandler(404)
-  def resource_not_found(error):
-    return jsonify({
-      "success": False,
-      "error": 404,
-      "message": "Resource Not Found"
-      }), 404
-
+# with messages ("Resource Not Found" - "bad request" - "unprocessable" - "Internal Server Error"
+# 'Method Not Allowed')
+#----------------------------------------------------------------------------------------------------
 
   @app.errorhandler(400)
   def bad_request(error):
@@ -285,14 +265,21 @@ def create_app(test_config=None):
       "message": "Bad Request"
       }), 400
 
-  
-  @app.errorhandler(500)
-  def internal_server_error(error):
+  @app.errorhandler(404)
+  def resource_not_found(error):
     return jsonify({
       "success": False,
-      "error": 500,
-      "message": "Internal Server Error"
-      }), 500
+      "error": 404,
+      "message": "Resource Not Found"
+      }), 404
+
+  @app.errorhandler(405)
+  def method_not_allowed(error):
+    return jsonify({
+      'success': False,
+      'error': 405,
+      'message': 'Method Not Allowed'
+      }), 405
 
   @app.errorhandler(422)
   def unprocessable(error):
@@ -302,18 +289,18 @@ def create_app(test_config=None):
       "message": "Unprocessable"
       }), 422
 
-  @app.errorhandler(405)
-  def method_not_allowed(error):
+  @app.errorhandler(500)
+  def internal_server_error(error):
     return jsonify({
-      'success': False,
-      'error': 405,
-      'message': 'Method Not Allowed'
-      }), 405
+      "success": False,
+      "error": 500,
+      "message": "Internal Server Error"
+      }), 500
   return app
     
-#-------------------------------------------------------------------------------------------------
-# odai alsalieti ------ full stack developer 
-#-------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
+# Odai Alsalieti ------ Full-Stack Developer
+#----------------------------------------------------------------------------------------------------
     
     
   
