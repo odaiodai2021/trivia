@@ -8,10 +8,12 @@ This project is a game where users can test their knowledge answering trivia que
 4. Search for questions based on a text query string.
 5. Play the quiz game, randomizing either all questions or within a specific category.
 
-## *Getting Started*
+## Getting Started
 
-### Installing Dependencies
+### Installing Dependencies :ok_hand:
+
 Developers using this project should already have:
+
 1. [python3](https://www.python.org/downloads/) and:
    - [Flask](http://flask.pocoo.org/): 
    is a lightweight backend microservices framework. Flask is required to handle requests and responses.
@@ -41,7 +43,7 @@ pip install -r requirements.txt
 
 ```
 
-## *Running the Frontend in Dev Mode*
+## Running the Frontend in Dev Mode
 
 
 The frontend app was built using create-react-app. In order to run the app in development mode use npm start. You can change the script in the package.json file.
@@ -53,7 +55,7 @@ Open `http://localhost:3000` to view it in the browser. The page will reload if 
 npm start
 
 ```
-## *Running the Server*
+## Running the Server
 From within the backend directory first ensure you are working using your created virtual environment.
 
 To run the server, execute:
@@ -69,7 +71,7 @@ Setting the `FLASK_ENV` variable to `development` will detect file changes and r
 
 Setting the `FLASK_APP` variable to `flaskr` directs flask to use the `flaskr` directory and the `__init__.py` file to find the application. 
 
-## *Testing*
+## Testing
 
 To run the tests, run
 
@@ -111,7 +113,9 @@ The API will return three types of errors:
 ### Endpoints
 
 **GET /categories**
-General: Returns a list categories.
+**General:**
+
+Returns a list categories.
 
 Sample: `curl http://127.0.0.1:5000/categories`
 
@@ -241,10 +245,12 @@ Sample: `curl http://127.0.0.1:5000/questions/5 -X DELETE`
 This endpoint either creates a new question or returns search results.
 
 If no search term is included in request:
-General:
+
+**General:**
 
 Creates a new question using JSON request parameters.
 Returns JSON object with newly created question, as well as paginated questions.
+
 Sample: `curl http://127.0.0.1:5000/questions -X POST -H "Content-Type: application/json" -d '{ "question": "What Shah Gohan built in India for his dead wife?", "answer": "ُTaj Mahal ", "difficulty": 3, "category": "4" }'`
 
 ```
@@ -390,7 +396,7 @@ Sample: `curl http://127.0.0.1:5000/categories/1/questions`
 }
 
 ```
-#### POST /quizzes
+#### POST /quizzes :ferris_wheel:
 **General:**
 
 Allows users to play the quiz game.
@@ -413,5 +419,5 @@ Sample: `curl http://127.0.0.1:5000/quizzes -X POST -H "Content-Type: applicatio
 ```
 
 ## Authors
-**Odai Alsalieti** authored the API **(__init__.py)**, test suite **(test_flaskr.py)**, and this **README**.
+**Odai Alsalieti** :blush: authored the API **(__init__.py)**, test suite **(test_flaskr.py)**, and this **README**.
 All other project files, including the models and frontend, were created by **Udacity** as a project template for the **Full Stack Web Developer Nanodegree**.
