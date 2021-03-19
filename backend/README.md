@@ -133,7 +133,7 @@ Sample: `curl http://127.0.0.1:5000/categories`
   }
 ```
 
-#### GET /questions
+#### GET /questions :question:
 **General:**
 
 Returns a list questions.
@@ -227,7 +227,7 @@ Sample: `curl http://127.0.0.1:5000/questions`
       "total_questions": 19
   }
 ```
-#### DELETE /questions/<int:id>
+#### DELETE /questions/<int:id> :wastebasket:
 **General:**
 
 Deletes a question by id using url parameters.
@@ -241,7 +241,7 @@ Sample: `curl http://127.0.0.1:5000/questions/5 -X DELETE`
 
 ```
 
-#### POST /questions
+#### POST /questions :heavy_plus_sign:
 This endpoint either creates a new question or returns search results.
 
 If no search term is included in request:
@@ -333,7 +333,7 @@ Sample: `curl http://127.0.0.1:5000/questions -X POST -H "Content-Type: applicat
 
 ```
 
-If search term is included in request:
+If **search term** is included in request: :mag:
 **General:**
 
 Searches for questions using search term in JSON request parameters.
