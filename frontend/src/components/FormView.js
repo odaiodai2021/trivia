@@ -59,6 +59,34 @@ class FormView extends Component {
     })
   }
 
+  submitCategory = (event) => {
+    event.preventDefault();
+    $.ajax({
+      url: '/categories', 
+      type: "POST",
+      dataType: 'json',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        category: this.state.category,
+        answer: this.state.answer,
+        difficulty: this.state.difficulty,
+        category: this.state.category
+      }),
+      xhrFields: {
+        withCredentials: true
+      },
+      crossDomain: true,
+      success: (result) => {
+        document.getElementById("add-category-form").reset();
+        return;
+      },
+      error: (error) => {
+        alert('Unable to add category. Please try your request again')
+        return;
+      }
+    })
+  }
+
   handleChange = (event) => {
     this.setState({[event.target.name]: event.target.value})
   }
@@ -102,5 +130,4 @@ class FormView extends Component {
     );
   }
 }
-
 export default FormView;
