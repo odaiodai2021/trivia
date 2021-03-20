@@ -227,7 +227,7 @@ def create_app(test_config=None):
                 selection = Question.query.filter(Question.category == category_id, Question.id.notin_(previous_questions)).all()
 
             current_questions = [question.format() for question in selection]
-            
+
             if selection:
                 question = current_questions[random.randint(0, len(selection)-1)]
             else:
@@ -241,6 +241,9 @@ def create_app(test_config=None):
             print(sys.exc_info())
             abort(422)
 
+    
+    """Error handler"""
+    
     @app.errorhandler(400)
     def bad_request(error):
         return jsonify({
