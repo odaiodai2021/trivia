@@ -63,8 +63,10 @@ def create_app(test_config=None):
         data = {}
         for category in categories:
             data[category.id] = category.type
+
         if len(data) == 0:
             abort(404)
+
         return jsonify({
             'success': True,
             'categories': data,
@@ -78,6 +80,7 @@ def create_app(test_config=None):
     Response body keys:
     'success', 'categories', 'current_category','total_questions'
     """
+
     @app.route('/questions', methods=['GET'])
     def get_questions():
         categories = Category.query.order_by(Category.type).all()
@@ -91,7 +94,9 @@ def create_app(test_config=None):
             'success': True,
             'questions': current_questions,
             'total_questions': len(selection),
-            'categories': {category.id: category.type for category in categories},
+            'categories': {
+                category.id: category.type for category in categories
+            },
             'current category': None
         })
 
@@ -138,7 +143,9 @@ def create_app(test_config=None):
 
         try:
             if search:
-                selection = Question.query.order_by(Question.id).filter(Question.question.ilike('%{}%'.format(search)))
+                selection = Question.query.order_by(Question.id).filter(
+                    Question.question.ilike('%{}%'.format(search))
+                )
                 current_questions = paginate_questions(request, selection)
                 return jsonify({
                     'success': True,
@@ -146,7 +153,12 @@ def create_app(test_config=None):
                     'total_questions': len(selection.all())
                 })
             else:
-                question = Question(question=new_question, answer=new_answer, category=new_category, difficulty=new_difficulty)
+                question = Question(
+                    question=new_question,
+                    answer=new_answer,
+                    category=new_category,
+                    difficulty=new_difficulty
+                )
                 question.insert()
                 selection = Question.query.order_by(Question.id).all()
                 current_questions = paginate_questions(request, selection)
@@ -172,7 +184,9 @@ def create_app(test_config=None):
         search_term = body.get('searchTerm', None)
         try:
             if search_term:
-                selection = Question.query.filter(Question.question.ilike(f'%{search_term}%')).all()
+                selection = Question.query.filter(
+                    Question.question.ilike(f'%{search_term}%')
+                ).all()
                 paginated = paginate_questions(request, selection)
 
                 return jsonify({
@@ -194,7 +208,9 @@ def create_app(test_config=None):
         if (category is None):
             abort(422)
         try:
-            questions = Question.query.filter_by(category=category.id).all()
+            questions = Question.query.filter_by(
+                category=category.id
+            ).all()
             current_questions = paginate_questions(request, questions)
 
             return jsonify({
@@ -222,14 +238,22 @@ def create_app(test_config=None):
             print(previous_questions, category_id)
 
             if category_id == 0:
-                selection = Question.query.filter(Question.id.notin_(previous_questions)).all()
+                selection = Question.query.filter(Question.id.notin_(
+                    previous_questions
+                )).all()
             else:
-                selection = Question.query.filter(Question.category == category_id, Question.id.notin_(previous_questions)).all()
+                selection = Question.query.filter(
+                    Question.category == category_id, Question.id.notin_(
+                        previous_questions
+                    )
+                ).all()
 
             current_questions = [question.format() for question in selection]
 
             if selection:
-                question = current_questions[random.randint(0, len(selection)-1)]
+                question = current_questions[
+                    random.randint(0, len(selection)-1)
+                ]
             else:
                 question = None
             return jsonify({
@@ -241,9 +265,8 @@ def create_app(test_config=None):
             print(sys.exc_info())
             abort(422)
 
-    
     """Error handler"""
-    
+
     @app.errorhandler(400)
     def bad_request(error):
         return jsonify({
